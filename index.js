@@ -31,9 +31,13 @@ function processFirstItem(stringList, callback) {
  *
  * 2. Which of the two uses a closure? How can you tell?
  *
- * counter2, it is looking for the variable "count" outside of the function
+ * Counter1, it's using the variable inside the scope of the function
  *
  * 3. In what scenario would the counter1 code be preferable? In what scenario would counter2 be better?
+ *
+ * counter1 would be more preferrable if you wanted to keep your variables clean. If you didnt need to use count again.
+ *
+ * counter2 would be more preferrable if we wanted to reference count is multiple places.
  *
  */
 
@@ -65,14 +69,6 @@ function inning() {
 
 console.log(inning());
 
-let random = [inning(), inning(), inning(), inning()];
-var randomSum = random.reduce(function (a, b) {
-  return a + b;
-}, 0);
-console.log(random);
-
-console.log(randomSum);
-
 /* Task 3: finalScore()
 
 Write a higher order function called `finalScore` that accepts the callback function `inning` (from above) and a number of innings and and returns the final score of the game in the form of an object.
@@ -87,22 +83,17 @@ finalScore(inning, 9) might return:
 
 */
 
-function finalScore(c, innings) {
-  let finalScore = { Home: 0, Away: 0 };
-  const homeArray = [];
-  const awayArray = [];
+function finalScore(cb, innings) {
+  let scoreFinal = { Home: 0, Away: 0 };
   for (let i = 0; i < innings; i++) {
-    homeArray.push(c());
-    finalScore.Home = homeArray.reduce(function (a, b) {
-      return a + b;
-    }, 0);
-    awayArray.push(c());
-    finalScore.Away = awayArray.reduce(function (a, b) {
-      return a + b;
-    }, 0);
+    let scoreHome = cb();
+    let scoreAway = cb();
+
+    scoreFinal.Home += scoreHome;
+    scoreFinal.Away += scoreAway;
   }
 
-  return finalScore;
+  return scoreFinal;
 }
 
 console.log(finalScore(inning, 9));
@@ -127,6 +118,31 @@ and returns the score at each pont in the game, like so:
 9th inning: awayTeam - homeTeam
 Final Score: awayTeam - homeTeam */
 
-function scoreboard(/* CODE HERE */) {
-  /* CODE HERE */
+function scoreboard(cb, innings) {
+  let scoreFinal = { awayTeam: 0, homeTeam: 0 };
+
+  for (let i = 1; i <= innings; i++) {
+    let scoreHome = cb();
+    let scoreAway = cb();
+
+    scoreFinal.homeTeam += scoreHome;
+    scoreFinal.awayTeam += scoreAway;
+
+    function getInningScore() {
+      if (i === 1) {
+        return `${i}st inning: Away: ${scoreFinal.awayTeam} - Home: ${scoreFinal.homeTeam}`;
+      } else if (i === 2) {
+        return `${i}nd inning: Away: ${scoreFinal.awayTeam} - Home: ${scoreFinal.homeTeam}`;
+      } else if (i === 3) {
+        return `${i}rd inning: Away: ${scoreFinal.awayTeam} - Home: ${scoreFinal.homeTeam}`;
+      } else {
+        return `${i}th inning: Away: ${scoreFinal.awayTeam} - Home:${scoreFinal.homeTeam}`;
+      }
+    }
+
+    console.log(getInningScore());
+  }
+  return `Final Score: Away: ${scoreFinal.awayTeam} - Home: ${scoreFinal.homeTeam}`;
 }
+
+console.log(scoreboard(inning, 9));
